@@ -14,21 +14,15 @@ using namespace types;
 #include <cmath>  
 
 
-Stepper sx({ .step=8,  .dir=10, .en=3 });
-Stepper sy({ .step=13, .dir=14, .en=5 });
-Engine eng({ .x=&sx, .y=&sy });
+Galvo gx({ .dac_pin=17, .ref_pin=16 });
+Galvo gy({ .dac_pin=18, .ref_pin=21 });
+Couple eng({ .x=&gx, .y=&gy });
 
 Laser laser({ .eng=&eng, .laser=33 });
 
 
 const char *ssid = "{ Fenix }";
 const char *pass = "Fenix548";
-
-Map<char, i32> src = {
-    {'x', -1400},
-    {'y', -1100},
-};
-
 
 inline Vec<Vec<i32>> staticc = {};
 inline Vec<Vec<i32>> points = {};
@@ -45,25 +39,13 @@ func setup() -> None {
        MISO =  9
        MOSI = 11
        SS   = 12 */
-    SPI.begin(SCK, MISO, MOSI, SS);
-    SD.begin(SS, SPI);
-
-    eng.enable();
-
-    eng.speed(700);
-    eng.acceleration(160);
-    eng.target({ .x=3200, .y=3200 });
-    while (!eng.tick()) {}
-    eng.reset();
-
-    eng.speed(500);
-    eng.acceleration(100);
-    eng.target({ .x=src['x'], .y=src['y'] });
-    while (!eng.tick()) {}
-    eng.reset();
+    // SPI.begin(SCK, MISO, MOSI, SS);
+    // SD.begin(SS, SPI);
+    stream.println("Initializing SPIFFS...");
+    SPIFFS.begin();
 
     eng.speed(spd);
-    eng.acceleration(acc);
+    eng.move({0, 0});
     
     WiFi.mode(WIFI_AP);
     WiFi.softAP(ssid, pass);
@@ -73,6 +55,15 @@ func setup() -> None {
     WServer::init();
 
     MDNS.addService("http", "tcp", 80);
+
+    digitalWrite(33, 1);
+
+    // while(true) {
+    //     delayMicroseconds(eng.move({255, 255}));
+    //     delayMicroseconds(eng.move({-255, 255}));
+    //     delayMicroseconds(eng.move({-255, -255}));
+    //     delayMicroseconds(eng.move({255, -255}));
+    // }
 
     Flow *flow = new Flow();
     WSocket::handlers[REAL_TIME] = [flow](u8 *data, u16 len) {
@@ -86,7 +77,10 @@ func setup() -> None {
     WSocket::handlers[DRAW] = [](u8 *data, u16 len) {
         i32 x = (i32(data[1]) - 128);
         i32 y = (128 - i32(data[2]));
+
         bool s = data[3];
+
+        // stream.printf("x=%d, y=%d, light=%d", x, y, s);
 
         staticc.push_back({x, y, s});;
     };
@@ -132,40 +126,41 @@ func setup() -> None {
     };
 
     laser.add({ flow });
+
+    // staticc = {
+    //     {200, -100, 1}, 
+    //     {-200, -100, 1},
+    //     {0, 200, 1}
+    // };
 }
 
 
 i16 ind = 0, pos = 0;
 
-func loop() -> None {
-    eng.speed(spd);
-    eng.acceleration(acc);
-    
-    if (eng.tick()) {
-        laser.tick();
+func loop() -> None {    
+    laser.tick();
 
-        if (!staticc.empty()) {
-            digitalWrite(33, staticc[ind][2]);
+    if (!staticc.empty()) {
+        digitalWrite(33, staticc[ind][2]);
 
-            i32 x = staticc[ind][0] * scale + xoff;
-            i32 y = staticc[ind][1] * scale + yoff;
+        i32 x = staticc[ind][0] * scale + xoff;
+        i32 y = staticc[ind][1] * scale + yoff;
 
-            eng.target({ .x=x, .y=y });
-            ind = (ind + 1) % staticc.size();
-        } else {
-            ind = 0;
-        }
+        delayMicroseconds(eng.move({ .x=x, .y=y }));
+        ind = (ind + 1) % staticc.size();
+    } else {
+        ind = 0;
+    }
 
-        if (!points.empty()) {
-            digitalWrite(33, points[pos][2]);
+    if (!points.empty()) {
+        digitalWrite(33, points[pos][2]);
 
-            i32 x = points[pos][0] * scale + xoff;
-            i32 y = points[pos][1] * scale + yoff;
+        i32 x = points[pos][0] * scale + xoff;
+        i32 y = points[pos][1] * scale + yoff;
 
-            eng.target({ .x=x, .y=y });
-            pos = (pos + 1) % points.size();
-        } else {
-            pos = 0;
-        }
+        delayMicroseconds(eng.move({ .x=x, .y=y }));
+        pos = (pos + 1) % points.size();
+    } else {
+        pos = 0;
     }
 }

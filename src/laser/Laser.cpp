@@ -13,7 +13,7 @@ using namespace types;
 
 class Laser {
     private: struct $Laser {
-        Engine *eng;
+        Couple *eng;
         u8 laser;
     };
 
@@ -37,7 +37,7 @@ class Laser {
             digitalWrite(laser, s);
             x = x * scale + xoff;
             y = y * scale + yoff;
-            eng->target({ .x=x, .y=y});
+            eng->move({ .x=x, .y=y});
         }
 
         ind = (ind + abs(done)) % objs.size();
@@ -51,7 +51,7 @@ class Laser {
     private: Vec<Object*> objs;  // Lists of objects to draw
     private: u32 ind = 0;        // Index of current object
 
-    private: Engine *eng;  // Laser engine
+    private: Couple *eng;  // Laser engine
     private: u8 laser;     // Laser PIN
 };
 

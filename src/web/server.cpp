@@ -2,7 +2,7 @@
 #define __WEB_SERVER__
 
 
-#include <SD.h>
+#include <SPIFFS.h>
 #include <ESPAsyncWebServer.h>
 
 #include "./socket.cpp"
@@ -20,9 +20,10 @@ namespace WServer {
         server.addHandler(&WSocket::socket);
 
         server.on("/", HTTP_GET, Web::index);
-        server.on("/config", HTTP_GET, Web::config);
+        
+        // server.on("/config", HTTP_GET, Web::config);
 
-        server.serveStatic("/", SD, "/");
+        server.serveStatic("/", SPIFFS, "/");
         server.begin();
     }
 }
