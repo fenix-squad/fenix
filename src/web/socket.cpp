@@ -12,12 +12,7 @@ using namespace types;
 
 
 enum Types {
-    REAL_TIME, DRAW, POINTS, CLEAR,
-
-    SCALE = 252,
-    XOFFS = 253,
-    YOFFS = 254,
-    SPEED = 255,
+    POINTS
 };
 
 
@@ -41,7 +36,6 @@ namespace WSocket {
             AwsFrameInfo *info = (AwsFrameInfo*) arg;
 
             if (info->final and info->index == 0 and info->len == len) {
-                stream.println("Data in 1 frame");
                 handlers[data[0]](data, len);
             }
         });

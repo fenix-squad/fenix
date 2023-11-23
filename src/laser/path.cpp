@@ -9,7 +9,7 @@
 using namespace types;
 
 
-class Flow: public Object {
+class Path: public Object {
     public: func tick() -> State {
         if (!points.empty()) {
             Vec<i32> point = points[0];
@@ -19,10 +19,10 @@ class Flow: public Object {
                 points.size() == 0,
                 point[0],
                 point[1],
-                bool(point[2])
+                { u8(point[2]), 0, 0}
             };
         } else {
-            return State {-1, 0, 0, 0};
+            return State {-1, 0, 0, {0, 0, 0}};
         }
     }
 

@@ -6,37 +6,43 @@
 #include "../assets/fonts/default.cpp"
 
 #include "./Object.cpp"
+#include "../logs/log.cpp"
 
 #include "../types/@package.cpp"
 using namespace types;
 
 
 class Text : public Object {
-    public: Text(String text) {
+    public: Text(String text, Font *font = &Default) {
         this->text = text;
+        this->font = font;
+        this->size = text.length();
     };
 
     public: func tick() -> State {
-        char c = text[ind];
-
+        Font font = *(this->font);
+        
         step = step + 1;
-        if (step == chars[c].size()) {
-            ind = (ind + 1) % text.length();
-            c = text[ind];
+        if (step == font[text[ind]].size()) {
+            ind = (ind + 1) % size;
             step = 0;
         }
+        Vec<Point> ch = font[text[ind]];
+        Point point = ch[step];
 
-        u8 ss = text.length();
-        i32 x = chars[c][step][0] + abs(ss / 2 - ind) * 15 * (ind < ss / 2 ? -1 : 1);
-        i32 y = chars[c][step][1];
-        bool s = chars[c][step][2];
+        i32 x = point.x + abs(size / 2 - ind) * 15 * (ind < size / 2 ? -1 : 1);
+        i32 y = point.y;
+        u8 s = point.s * 32;
 
-        bool done = ind == text.length() - 1 and step == chars[c].size() - 1;
-        return State { done, x, y, s };
+        bool done = (ind == size - 1) and (step == ch.size() - 1);
+        return State { done, x, y, { s, 0, 0 } };
     };
 
     private: String text;
-    private: u16 ind = 0,
+    private: Font *font;
+
+    private: u16 size = 0,
+                 ind = 0,
                  step = 0;
 };
 

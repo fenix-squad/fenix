@@ -10,13 +10,13 @@
 using namespace types;
 
 
-struct Couple {
+struct Engine {
 
-    private: struct $Couple {
+    private: struct $Engine {
         Galvo *x, *y;
     };
 
-    public: Couple($Couple args) {
+    public: Engine($Engine args) {
         this->x = args.x;
         this->y = args.y;
     }
@@ -26,14 +26,14 @@ struct Couple {
         this->y->speed(spd);
     };
 
-    private: struct $target {
+    private: struct $pos {
         i32 x, y;
     };
 
-    public: func move($target args) -> u32 {
-        u32 time_x = this->x->move(args.x);
-        u32 time_y = this->y->move(args.y);
-        return max(time_x, time_y);
+    public: func target($pos pos) -> u32 {
+        u32 tx = this->x->target(pos.x);
+        u32 ty = this->y->target(pos.y);
+        return max(tx, ty);
     };
 
     private: Galvo *x, *y;

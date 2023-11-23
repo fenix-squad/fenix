@@ -3,6 +3,7 @@
 
 
 #include <Arduino.h>
+#include "../logs/log.cpp"
 
 #include "../devs/@package.cpp"
 #include "./Object.cpp"
@@ -13,7 +14,7 @@ using namespace types;
 
 class Laser {
     private: struct $Laser {
-        Couple *eng;
+        Engine *eng;
         u8 laser;
     };
 
@@ -30,28 +31,23 @@ class Laser {
         }
     };
 
-    public: func tick() {
-        auto [done, x, y, s] = objs[ind]->tick();
+    public: func tick() -> Tuple<i32, bool> {
+        auto [done, x, y, c] = objs[ind]->point();
 
         if (done != -1) {
-            digitalWrite(laser, s);
-            x = x * scale + xoff;
-            y = y * scale + yoff;
-            eng->move({ .x=x, .y=y});
+            ledcWrite(0, c.r);
+            delayMicroseconds(eng->target({ .x=x, .y=y }));
         }
 
+        i32 old = ind;
         ind = (ind + abs(done)) % objs.size();
+        return {old, done};
     };
 
-    public: i16 xoff = 0,
-                yoff = 0;
-
-    public: f32 scale = 0.5;
-
-    private: Vec<Object*> objs;  // Lists of objects to draw
+    public: Vec<Object*> objs;  // List  of objects to draw
     private: u32 ind = 0;        // Index of current object
 
-    private: Couple *eng;  // Laser engine
+    private: Engine *eng;  // Laser engine
     private: u8 laser;     // Laser PIN
 };
 

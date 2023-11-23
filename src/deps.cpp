@@ -15,5 +15,7 @@ using namespace fs;
 #include <ESPmDNS.h>
 #include <ESPAsyncWebServer.h>
 
+#include <driver/ledc.h>
+
 
 #endif

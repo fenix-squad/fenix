@@ -11,45 +11,43 @@ using namespace types;
 
 
 struct Galvo {
-
-    private: i32 current_position = 0;
-    private: f32 max_speed = 0;
-    private: u8 dac_pin, ref_pin;
-
-    private: u32 operation_time = 0;
+    private: i32 cur = 0;
+    private: f32 spd = 0;
+    private: u8 dac, ref;
 
     private: struct $Galvo {
-        u8 dac_pin;
-        u8 ref_pin;
+        u8 dac;
+        u8 ref;
     };
 
     public: Galvo($Galvo args) {
-        auto [dac_pin, ref_pin] = args;
+        auto [dac, ref] = args;
 
-        this->dac_pin = args.dac_pin;
-        this->ref_pin = args.ref_pin;
+        this->dac = dac;
+        this->ref = ref;
 
-        pinMode(dac_pin, OUTPUT);
-        pinMode(ref_pin, OUTPUT);
+        pinMode(dac, OUTPUT);
+        pinMode(ref, OUTPUT);
     };
 
-    public: func speed(f32 spd) -> None {  // Установка макс. скорости в 
-        this->max_speed = spd;
+    public: func speed(f32 spd) -> None {
+        this->spd = spd;
     };
 
-    public: func move(i32 pos) -> u32 {
+    public: func target(i32 pos) -> u32 {
         pos = constrain(pos, -255, 255);
+
         if (pos >= 0) {
-            dacWrite(dac_pin, pos);
-            digitalWrite(ref_pin, 0);
+            dacWrite(dac, pos);
+            digitalWrite(ref, LOW);
+        } else {
+            dacWrite(dac, 255 - abs(pos));
+            digitalWrite(ref, HIGH);
         }
-        else {
-            dacWrite(dac_pin, 255 - abs(pos));
-            digitalWrite(ref_pin, 1);
-        }
-        operation_time = abs(pos - current_position) * max_speed;
-        current_position = pos; 
-        return operation_time;
+        u32 d = abs(pos - cur);
+        u32 t = d * spd;
+        this->cur = pos;
+        return t;
     };
 };
 

@@ -1,0 +1,4 @@
+SCK  =  7
+MISO =  9
+MOSI = 11
+SS   = 12

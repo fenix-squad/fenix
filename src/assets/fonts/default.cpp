@@ -2,11 +2,10 @@
 #define __FONT_DEFAULT_
 
 
-#include "../../types/@package.cpp"
-using namespace types;
+#include "./Font.cpp"
 
 
-inline Map<char, Vec<Vec<i32>>> chars = {
+inline Font Default = {
     {'-', {
         {-5, 0, 0},
         {5, 0, 1},

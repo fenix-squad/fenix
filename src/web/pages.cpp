@@ -9,28 +9,25 @@ using namespace types;
 #include "types.cpp"
 
 
-inline f32 spd = 3;
+inline f32 spd = 4;
 
 namespace Web {
     inline func index(Request *request) -> None {
         request->send(SPIFFS, "/index.html", "text/html");
     }
 
-    // inline func config(Request *request) -> None {
-    //     u8 count = request->params();
+    inline func config(Request *request) -> None {
+        u8 count = request->params();
 
-    //     for (u8 ind = 0; ind < count; ind++) {
-    //         Parameter *param = request->getParam(ind);
-    //         if (param->name() == "acc") {
-    //             acc = param->value().toInt();
-    //         }
-    //         if (param->name() == "spd") {
-    //             spd = param->value().toInt();
-    //         }
+        for (u8 ind = 0; ind < count; ind++) {
+            Parameter *param = request->getParam(ind);
+            if (param->name() == "spd") {
+                spd = param->value().toInt();
+            }
 
-    //         request->send(200, "text/html", "");
-    //     }
-    // }
+            request->send(200, "text/html", "");
+        }
+    }
 };
 
 
