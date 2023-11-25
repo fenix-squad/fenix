@@ -11,6 +11,7 @@
 #include "types/@package.cpp"
 using namespace types;
 
+#include "./math.cpp"
 #include <cmath>  
 
 
@@ -23,9 +24,6 @@ Laser laser({ .eng=&eng, .laser=33 });
 
 const char *ssid = "{ Fenix }";
 const char *pass = "Fenix548";
-
-inline Vec<Vec<i32>> staticc = {};
-inline Vec<Vec<i32>> points = {};
 
 
 func setup() -> None {
@@ -56,8 +54,8 @@ func setup() -> None {
 
     Path *path = new Path();
 
-    WSocket::handlers[POINTS] = [](u8 *data, u16 len) {
-        points = {};
+    WSocket::handlers[POINTS] = [path](u8 *data, u16 len) {
+        Vec<Vec<i32>> points((len - 1) / 4);
         for (u16 ind = 1; ind < len; ind += 4) {
             u32 point = data[ind] << 24
                         | data[ind + 1] << 16
@@ -65,33 +63,33 @@ func setup() -> None {
                         | data[ind + 3];
 
             i32 x = ((point & (0b11111111'10000000'00000000'00000000)) >> 23) - 255;
-            i32 y = ((point & (0b00000000'01111111'11000000'00000000)) >> 14) - 255;
+            i32 y = 255 - ((point & (0b00000000'01111111'11000000'00000000)) >> 14);
 
             u8 r = ((point & (0b00000000'00000000'00111110'00000000)) >> 9);
             u8 g = ((point & (0b00000000'00000000'00000001'11110000)) >> 4);
             u8 b = ((point & (0b00000000'00000000'00000000'00001111)) >> 0);
 
             bool s = (r != 0);
-            points.push_back({x, y, s});
+            points[(ind - 1) / 4] = {x, y, s};    
         }
+        stream.println(points.size());
+        path->points = points;
+    };
+
+    WSocket::handlers[SPEED] = [](u8 *data, u16 len) {
+        spd = data[1];
     };
 
     laser.add({
-        (new Relygon(250, 64))->rotate(PI / 4),
-        (new Text("548"))->scale(10)
+        path,
     });
 }
 
-u32 angle = 0;
+
 u32 last = 0;
+u32 angle = 0;
 
 func loop() -> None {
-    auto [ind, done] = laser.tick();
-    if (millis() - last >= 50) {
-        angle = (angle + 3) % 360;
-        laser.objs[0]->rotate(angle / 180.0 * PI);
-        laser.objs[1]->rotate(angle / 180.0 * PI);
-
-        last = millis();
-    }
+    eng.speed(spd);
+    laser.tick();
 }

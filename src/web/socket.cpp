@@ -12,7 +12,8 @@ using namespace types;
 
 
 enum Types {
-    POINTS
+    POINTS,
+    SPEED = 255,
 };
 
 
@@ -32,7 +33,7 @@ namespace WSocket {
             if (type != WS_EVT_DATA) {
                 return;
             }
-            stream.println("Data received");
+            stream.println("\nData received");
             AwsFrameInfo *info = (AwsFrameInfo*) arg;
 
             if (info->final and info->index == 0 and info->len == len) {

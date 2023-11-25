@@ -3,8 +3,8 @@
 
 
 #include <Arduino.h>
-#include <cmath>
 
+#include "../math.cpp"
 #include "../logs/log.cpp"
 
 #include "../types/@package.cpp"
@@ -46,12 +46,17 @@ class Object {
 
     public: func virtual point() -> State {
         auto [done, x, y, c] = this->tick();
+
         x = x * sx;
         y = y * sy;
+
+        f32 cs = math::cos(angle);
+        f32 sn = math::sin(angle);
+
         return State {
             done,
-            i32((x - rx) * cos(angle) - (y - ry) * sin(angle) + rx),
-            i32((y - ry) * cos(angle) + (x - rx) * sin(angle) + ry),
+            i32((x - rx) * cs - (y - ry) * sn + rx),
+            i32((y - ry) * cs + (x - rx) * sn + ry),
             c,
         };
     }

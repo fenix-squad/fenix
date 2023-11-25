@@ -31,7 +31,7 @@ class Laser {
         }
     };
 
-    public: func tick() -> Tuple<i32, bool> {
+    public: func tick() {
         auto [done, x, y, c] = objs[ind]->point();
 
         if (done != -1) {
@@ -39,9 +39,7 @@ class Laser {
             delayMicroseconds(eng->target({ .x=x, .y=y }));
         }
 
-        i32 old = ind;
         ind = (ind + abs(done)) % objs.size();
-        return {old, done};
     };
 
     public: Vec<Object*> objs;  // List  of objects to draw

@@ -12,14 +12,15 @@ using namespace types;
 class Path: public Object {
     public: func tick() -> State {
         if (!points.empty()) {
-            Vec<i32> point = points[0];
-            points.erase(points.begin());
+            Vec<i32> point = points[ind++];
+            bool done = ind == points.size();
+            ind = ind % points.size();
 
             return State {
-                points.size() == 0,
+                done,
                 point[0],
                 point[1],
-                { u8(point[2]), 0, 0}
+                { u8(point[2] * 32), 0, 0}
             };
         } else {
             return State {-1, 0, 0, {0, 0, 0}};
@@ -27,6 +28,7 @@ class Path: public Object {
     }
 
     public: Vec<Vec<i32>> points;
+    private: u32 ind = 0;
 };
 
 
