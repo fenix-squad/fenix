@@ -10,16 +10,12 @@
 #include "../types/@package.cpp"
 using namespace types;
 
-
-struct Color {
-    u8 r, g, b;
-};
+#include "./point.cpp"
 
 
 struct State {
-    i32 done;
-    i32 x, y;
-    Color c;
+    i32 status;
+    Point point;
 };
 
 
@@ -45,7 +41,8 @@ class Object {
     }
 
     public: func virtual point() -> State {
-        auto [done, x, y, c] = this->tick();
+        auto [status, point] = this->tick();
+        auto [x, y, c] = point;
 
         x = x * sx;
         y = y * sy;
@@ -54,10 +51,12 @@ class Object {
         f32 sn = math::sin(angle);
 
         return State {
-            done,
-            i32((x - rx) * cs - (y - ry) * sn + rx),
-            i32((y - ry) * cs + (x - rx) * sn + ry),
-            c,
+            .status=status,
+            .point={
+                i32((x - rx) * cs - (y - ry) * sn + rx),
+                i32((y - ry) * cs + (x - rx) * sn + ry),
+                c,
+            }
         };
     }
 

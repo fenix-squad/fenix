@@ -35,8 +35,10 @@ class Graph: public Object {
         i32 y = fn(x);
         return State {
             done,
-            x, y,
-            {32, 0, 0},
+            {
+                x, y,
+                W,
+            }
         };
     }
 

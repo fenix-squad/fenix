@@ -32,10 +32,13 @@ class Laser {
     };
 
     public: func tick() {
-        auto [done, x, y, c] = objs[ind]->point();
+        auto [done, point] = objs[ind]->point();
+        auto [x, y, c] = point;
 
         if (done != -1) {
-            ledcWrite(0, c.r);
+            ledcWrite(0, c.r >> 3);
+            ledcWrite(1, c.g >> 3);
+            ledcWrite(2, c.b >> 3);
             delayMicroseconds(eng->target({ .x=x, .y=y }));
         }
 

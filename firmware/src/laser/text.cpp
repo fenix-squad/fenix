@@ -28,14 +28,16 @@ class Text : public Object {
             step = 0;
         }
         Vec<Point> ch = font[text[ind]];
-        Point point = ch[step];
+        auto [x, y, c] = ch[step];
 
-        i32 x = point.x + abs(size / 2 - ind) * 15 * (ind < size / 2 ? -1 : 1);
-        i32 y = point.y;
-        u8 s = point.s * 32;
+        x = x + abs(size / 2 - ind) * 15 * (ind < size / 2 ? -1 : 1);
+        y = y;
 
-        bool done = (ind == size - 1) and (step == ch.size() - 1);
-        return State { done, x, y, { s, 0, 0 } };
+        bool status = (ind == size - 1) and (step == ch.size() - 1);
+        return State {
+            .status=status,
+            .point={ x, y, c }
+        };
     };
 
     private: String text;

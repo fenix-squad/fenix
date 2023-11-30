@@ -36,8 +36,8 @@ func setup() -> None {
     ledcSetup(2, 1'000'000, 5);
 
     ledcAttachPin(33, 0);
-    // ledcAttachPin(33, 0);
-    // ledcAttachPin(33, 0);
+    ledcAttachPin(36, 1);
+    ledcAttachPin(38, 2);
 
     eng.speed(spd);
     eng.target({0, 0});
@@ -55,7 +55,7 @@ func setup() -> None {
     Path *path = new Path();
 
     WSocket::handlers[POINTS] = [path](u8 *data, u16 len) {
-        Vec<Vec<i32>> points((len - 1) / 4);
+        Vec<Point> points((len - 1) / 4);
         for (u16 ind = 1; ind < len; ind += 4) {
             u32 point = data[ind] << 24
                         | data[ind + 1] << 16
@@ -69,10 +69,9 @@ func setup() -> None {
             u8 g = ((point & (0b00000000'00000000'00000001'11110000)) >> 4);
             u8 b = ((point & (0b00000000'00000000'00000000'00001111)) >> 0);
 
-            bool s = (r != 0);
-            points[(ind - 1) / 4] = {x, y, s};    
+            u8 s = (r != 0) * 255;
+            points[(ind - 1) / 4] = { x, y, rgb(s) };
         }
-        stream.println(points.size());
         path->points = points;
     };
 
@@ -85,9 +84,6 @@ func setup() -> None {
     });
 }
 
-
-u32 last = 0;
-u32 angle = 0;
 
 func loop() -> None {
     eng.speed(spd);

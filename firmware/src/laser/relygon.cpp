@@ -21,7 +21,14 @@ class Relygon: public Object {
         i32 y = round(cos(angle) * r);
 
         bool done = step == count;
-        return State { done, x, y, { u8((step != 0) * 32), 0, 0 } };
+
+        return State {
+            .status=done,
+            .point={
+                x, y,
+                rgb(u8((step != 0) * 32))
+            }
+        };
     }
 
     private: u16 r = 24;

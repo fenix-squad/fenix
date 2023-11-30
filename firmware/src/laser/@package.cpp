@@ -9,7 +9,6 @@
 #include "./path.cpp"
 
 #include "./graph.cpp"
-#include "./equation.cpp"
 
 #include "./relygon.cpp"
 #include "./Laser.cpp"
