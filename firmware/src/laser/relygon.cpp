@@ -26,7 +26,7 @@ class Relygon: public Object {
             .status=done,
             .point={
                 x, y,
-                rgb(u8((step != 0) * 32))
+                rgb(u8((step != 0) * 255))
             }
         };
     }

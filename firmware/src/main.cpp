@@ -1,4 +1,5 @@
 #include "deps.cpp"
+#include "config.cpp"
 
 #include "logs/log.cpp"
 
@@ -15,11 +16,11 @@ using namespace types;
 #include <cmath>  
 
 
-Galvo gx({ .dac=17, .ref=16 });
-Galvo gy({ .dac=18, .ref=21 });
+Galvo gx({ .dac=XDAC, .ref=XREF });
+Galvo gy({ .dac=YDAC, .ref=YREF });
 Engine eng({ .x=&gx, .y=&gy });
 
-Laser laser({ .eng=&eng, .laser=33 });
+Laser laser({ .eng=&eng });
 
 
 const char *ssid = "{ Fenix }";
@@ -31,13 +32,13 @@ func setup() -> None {
     stream.begin();
     SPIFFS.begin();
 
-    ledcSetup(0, 1'000'000, 5);
-    ledcSetup(1, 1'000'000, 5);
-    ledcSetup(2, 1'000'000, 5);
+    ledcSetup(0, FREQ, 5);
+    ledcSetup(1, FREQ, 5);
+    ledcSetup(2, FREQ, 5);
 
-    ledcAttachPin(33, 0);
-    ledcAttachPin(36, 1);
-    ledcAttachPin(38, 2);
+    ledcAttachPin(RPIN, 0);
+    ledcAttachPin(GPIN, 1);
+    ledcAttachPin(BPIN, 2);
 
     eng.speed(spd);
     eng.target({0, 0});
@@ -50,7 +51,6 @@ func setup() -> None {
     WServer::init();
 
     MDNS.addService("http", "tcp", 80);
-    digitalWrite(33, 1);
 
     Path *path = new Path();
 
@@ -80,7 +80,7 @@ func setup() -> None {
     };
 
     laser.add({
-        path,
+        path
     });
 }
 

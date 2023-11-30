@@ -15,14 +15,10 @@ using namespace types;
 class Laser {
     private: struct $Laser {
         Engine *eng;
-        u8 laser;
     };
 
     public: Laser($Laser args) {
         this->eng = args.eng;
-        this->laser = args.laser;
-
-        pinMode(args.laser, OUTPUT);
     };
 
     public: func add(IList<Object*> items) {
@@ -46,10 +42,9 @@ class Laser {
     };
 
     public: Vec<Object*> objs;  // List  of objects to draw
-    private: u32 ind = 0;        // Index of current object
+    private: u32 ind = 0;       // Index of current object
 
     private: Engine *eng;  // Laser engine
-    private: u8 laser;     // Laser PIN
 };
 
 
