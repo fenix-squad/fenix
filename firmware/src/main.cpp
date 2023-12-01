@@ -81,7 +81,7 @@ func setup() -> None {
     };
 
     laser.add({
-        path
+        path,
     });
 }
 

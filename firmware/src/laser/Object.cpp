@@ -22,6 +22,13 @@ struct State {
 class Object {
     public: virtual func tick() -> State = 0;
 
+
+    public: virtual func move(i32 x, i32 y) -> Object* {
+        this->dx = x;
+        this->dy = y;
+        return this;
+    }
+
     public: virtual func rotate(f32 angle, i32 x = 0, i32 y = 0) -> Object* {
         this->angle = angle;
         this->rx = x;
@@ -53,14 +60,15 @@ class Object {
         return State {
             .status=status,
             .point={
-                i32((x - rx) * cs - (y - ry) * sn + rx),
-                i32((y - ry) * cs + (x - rx) * sn + ry),
+                i32((x - rx) * cs - (y - ry) * sn + rx) + dx,
+                i32((y - ry) * cs + (x - rx) * sn + ry) + dy,
                 c,
             }
         };
     }
 
     private: f32 angle = 0;
+    private: i32 dx = 0, dy = 0;
     private: i32 rx = 0, ry = 0;
     private: f32 sx = 1, sy = 1;
 };

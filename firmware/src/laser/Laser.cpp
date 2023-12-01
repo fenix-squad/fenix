@@ -4,12 +4,14 @@
 
 #include <Arduino.h>
 #include "../logs/log.cpp"
-
 #include "../devs/@package.cpp"
+
 #include "./Object.cpp"
+#include "./Group.cpp"
 
 #include "../types/@package.cpp"
 using namespace types;
+
 
 
 class Laser {
@@ -23,12 +25,12 @@ class Laser {
 
     public: func add(IList<Object*> items) {
         for (Object *item : items) {
-            objs.push_back(item);
+            data.add(item);
         }
     };
 
     public: func tick() {
-        auto [done, point] = objs[ind]->point();
+        auto [done, point] = data.tick();
         auto [x, y, c] = point;
 
         if (done != -1) {
@@ -37,14 +39,10 @@ class Laser {
             ledcWrite(2, c.b >> 3);
             delayMicroseconds(eng->target(x, y));
         }
-
-        ind = (ind + abs(done)) % objs.size();
     };
 
-    public: Vec<Object*> objs;  // List  of objects to draw
-    private: u32 ind = 0;       // Index of current object
-
-    private: Engine *eng;  // Laser engine
+    private: Group data;
+    private: Engine *eng;
 };
 
 
