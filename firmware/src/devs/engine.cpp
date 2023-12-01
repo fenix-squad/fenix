@@ -31,8 +31,12 @@ struct Engine {
     };
 
     public: func target($pos pos) -> u32 {
-        u32 tx = this->x->target(pos.x);
-        u32 ty = this->y->target(pos.y);
+        return target(pos.x, pos.y);
+    };
+
+    public: func target(i32 x, i32 y) -> u32 {
+        u32 tx = this->x->target(x);
+        u32 ty = this->y->target(y);
         return max(tx, ty);
     };
 

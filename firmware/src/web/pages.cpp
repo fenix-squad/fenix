@@ -9,7 +9,7 @@ using namespace types;
 #include "types.cpp"
 
 
-inline u8 spd = 4;
+inline u8 spd = 3;
 
 namespace Web {
     inline func index(Request *request) -> None {

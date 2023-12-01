@@ -54,8 +54,10 @@ func setup() -> None {
 
     Path *path = new Path();
 
-    WSocket::handlers[POINTS] = [path](u8 *data, u16 len) {
-        Vec<Point> points((len - 1) / 4);
+    WSocket::handlers[POINTS] = [path](Vec<u8> &data, u16 len) {
+        auto &points = path->points;
+        points.resize((len - 1) / 4);
+
         for (u16 ind = 1; ind < len; ind += 4) {
             u32 point = data[ind] << 24
                         | data[ind + 1] << 16
@@ -72,10 +74,9 @@ func setup() -> None {
             u8 s = (r != 0) * 255;
             points[(ind - 1) / 4] = { x, y, rgb(s) };
         }
-        path->points = points;
     };
 
-    WSocket::handlers[SPEED] = [](u8 *data, u16 len) {
+    WSocket::handlers[SPEED] = [](Vec<u8> &data, u16 len) {
         spd = data[1];
     };
 

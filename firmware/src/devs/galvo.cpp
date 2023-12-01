@@ -35,8 +35,6 @@ struct Galvo {
     };
 
     public: func target(i32 pos) -> u32 {
-        pos = constrain(pos, -255, 255);
-
         if (pos >= 0) {
             dacWrite(dac, pos);
             digitalWrite(ref, LOW);

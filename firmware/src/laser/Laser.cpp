@@ -35,7 +35,7 @@ class Laser {
             ledcWrite(0, c.r >> 3);
             ledcWrite(1, c.g >> 3);
             ledcWrite(2, c.b >> 3);
-            delayMicroseconds(eng->target({ .x=x, .y=y }));
+            delayMicroseconds(eng->target(x, y));
         }
 
         ind = (ind + abs(done)) % objs.size();
