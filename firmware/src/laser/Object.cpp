@@ -23,6 +23,11 @@ class Object {
     public: virtual func tick() -> State = 0;
 
 
+    public: virtual func display(bool flag) -> Object* {
+        this->flag = flag;
+        return this;
+    }
+
     public: virtual func move(i32 x, i32 y) -> Object* {
         this->dx = x;
         this->dy = y;
@@ -48,6 +53,11 @@ class Object {
     }
 
     public: func virtual point() -> State {
+        if (!flag) {
+            stream.println("SKIP");
+            return { -1, {0, 0, B} };
+        }
+
         auto [status, point] = this->tick();
         auto [x, y, c] = point;
 
@@ -71,6 +81,7 @@ class Object {
     private: i32 dx = 0, dy = 0;
     private: i32 rx = 0, ry = 0;
     private: f32 sx = 1, sy = 1;
+    private: bool flag = true;
 };
 
 

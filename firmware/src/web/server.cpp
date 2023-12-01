@@ -18,11 +18,7 @@ namespace WServer {
 
     inline func init() -> None {
         server.addHandler(&WSocket::socket);
-
         server.on("/", HTTP_GET, Web::index);
-        
-        // server.on("/config", HTTP_GET, Web::config);
-
         server.serveStatic("/", SPIFFS, "/");
         server.begin();
     }

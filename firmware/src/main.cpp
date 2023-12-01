@@ -26,6 +26,9 @@ Laser laser({ .eng=&eng });
 const char *ssid = "{ Fenix }";
 const char *pass = "Fenix548";
 
+Group *dvd;
+Relygon *bd;
+
 
 func setup() -> None {
     USB.begin();
@@ -53,8 +56,20 @@ func setup() -> None {
     MDNS.addService("http", "tcp", 80);
 
     Path *path = new Path();
+    Relygon *sq = new Relygon(60, 24);
+    Text *tx = (new Text("548"));
 
-    WSocket::handlers[POINTS] = [path](Vec<u8> &data, u16 len) {
+    dvd = new Group {
+        sq->rotate(45),
+        tx->scale(1.8),
+    };
+    bd = new Relygon(340, 4),
+
+    WSocket::handlers[POINTS] = [&](Vec<u8> &data, u16 len) {
+        stream.println("HERE");
+        dvd->display(false);
+        bd->display(false);
+
         auto &points = path->points;
         points.resize((len - 1) / 4);
 
@@ -82,11 +97,37 @@ func setup() -> None {
 
     laser.add({
         path,
+        dvd,
+        bd->rotate(45),
     });
 }
+
+
+u32 last = 0;
+i32 sx = 4, sy = 4;
+i32 x = 0, y = 0;
+i32 s = 0;
 
 
 func loop() -> None {
     eng.speed(spd);
     laser.tick();
+
+    if (millis() - last > 30) {
+        s = (s + 1) % 180;
+        x += sx;
+        y += sy;
+
+        f32 sc = sin(s  / 180.0 * PI) + 0.7;
+        if ((x - 60 * sc) < -200 || (x + 60 * sc) > 200) {
+            sx = -sx;
+        }
+        if ((y - 60 * sc) < -200 || (y + 60 * sc) > 200) {
+            sy = -sy;
+        }
+
+        dvd->move(x, y);
+        dvd->scale(sc);
+        last = millis();
+    }
 }
